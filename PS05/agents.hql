@@ -32,14 +32,16 @@ create temporary table agent_logs (
 );
 
 insert overwrite table agent_logs
--- YOUR CODE GOES HERE
+select from_unixtime(unix_timestamp(rawdatetime, "[dd/MMM/yyyy:HH:mm:ss Z]")), agent, 
+if(instr(lower(agent),"windows")>0, "windows", if(instr(lower(agent),"mac")>0, "mac", if(instr(lower(agent), "linux")>0, "linux",""))),
+instr(lower(agent),"bot")>0 from raw_logs;
 
 -- Section #1:
-select YOUR CODE GOES HERE
+select os, count(*) from agent_logs where os <> "" group by 1;
 
 -- Section #2: Provide 5 agents for which the OS could not be classified that are bots
-select YOUR CODE GOES HERE
+select agent from agent_logs where length(agent) > 15 and bot = 1 and os = "" limit 5;
 
 -- Section #3: Provide 5 agents for which the OS could not be classified that are not bots.
-select YOUR CODE GOES HERE
+select agent from agent_logs where length(agent) > 15 and bot = 0 and os = "" limit 5;
 
